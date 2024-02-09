@@ -2,51 +2,46 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daglig Budget Beräknare</title>
+    <!-- Inkludera Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h2>Daglig Budget Beräknare</h2>
-    <label for="saldo">Ange ditt nuvarande saldo:</label>
-    <input type="number" id="saldo" required>
-    <label for="lonedag">Ange vilken dag du får lön (standard är 25):</label>
-    <input type="number" id="lonedag" value="25">
-    <button onclick="beraknaBudget()">Beräkna</button>
-    <div id="resultat"></div>
+    <div class="container mt-5">
+        <h2>Daglig Budget Beräknare</h2>
+        <div class="form-group">
+            <label for="saldo">Ange ditt nuvarande saldo:</label>
+            <input type="number" class="form-control" id="saldo" required>
+        </div>
+        <div class="form-group">
+            <label for="lonedag">Ange vilken dag du får lön (standard är 25):</label>
+            <input type="number" class="form-control" id="lonedag" value="25">
+        </div>
+        <button class="btn btn-primary mb-3" onclick="beraknaBudget()">Beräkna</button>
+        <div id="resultat"></div>
+    </div>
 
     <script>
         function beraknaBudget() {
-            // Hämta värdet från input-fältet med id "saldo"
             var saldo = document.getElementById("saldo").value;
-            // Hämta värdet från input-fältet med id "lonedag", om det inte finns använd standardvärdet 25
             var lonedag = document.getElementById("lonedag").value || 25;
-            // Hämta dagens datum
             var idag = new Date().getDate();
-            // Hämta månaden (månaderna är indexbaserade, så vi lägger till 1)
             var manad = new Date().getMonth() + 1;
-            // Hämta året
             var ar = new Date().getFullYear();
-            // Variabel för att lagra antalet dagar kvar till lön
             var dagarTillLon = 0;
 
-            // Om dagens datum är mindre än eller lika med löningsdagen
             if (idag <= lonedag) {
-                // Beräkna antalet dagar kvar till lön genom att subtrahera dagens datum från löningsdagen
                 dagarTillLon = lonedag - idag;
             } else {
-                // Hämta antalet dagar i månaden
                 var dagarIManaden = new Date(ar, manad, 0).getDate();
-                // Beräkna antalet dagar kvar till lön genom att subtrahera dagens datum från antalet dagar i månaden och lägga till löningsdagen
                 dagarTillLon = dagarIManaden - idag + parseInt(lonedag);
             }
 
-            // Om det finns dagar kvar till lön
             if (dagarTillLon > 0) {
-                // Beräkna hur mycket pengar som kan spenderas per dag genom att dela saldo med antalet dagar kvar till lön och avrunda till två decimaler
                 var pengarPerDag = (saldo / dagarTillLon).toFixed(2);
-                // Visa resultatet i elementet med id "resultat"
                 document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera " + pengarPerDag + " kr per dag.";
             } else {
-                // Visa felmeddelande om något gick fel eller om det inte finns några dagar kvar till lön
                 document.getElementById("resultat").innerHTML = "Något gick fel. Kontrollera att du har angett korrekt information.";
             }
         }
