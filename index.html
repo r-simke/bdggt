@@ -28,6 +28,9 @@
             var idag = new Date();
             var manad = idag.getMonth() + 1;
             var ar = idag.getFullYear();
+            if (idag.getDate() >= 25) {
+                manad += 1; // Gå till nästa månad om det är den 25:e eller senare
+            }
             var lonedag = new Date(ar, manad, 25);
 
             switch (lonedag.getDay()) {
