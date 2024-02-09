@@ -4,83 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BDGGT:- Daglig Budget Beräknare</title>
-    <!-- Inkludera Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>BDGGT:-</h2>
+    <main class="container mt-5">
+        <h2>BDGGT:- Daglig Budget Beräknare</h2>
         <div class="form-group">
-            <label for="saldo">Ange ditt nuvarande saldo:</label>
-            <input type="tel" class="form-control" id="saldo" required oninput="beraknaBudget()">
+            <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
+            <input type="tel" class="form-control" id="nuvarandeSaldo" required oninput="beraknaBudget()">
         </div>
         <div class="form-group">
-            <label for="lonedag">Ange vilken dag du får lön:</label>
-            <input type="number" class="form-control" id="lonedag" oninput="beraknaBudget()">
-            <small id="veckodagInfo" class="form-text text-muted">Lönedagen sätts automatiskt beroende på veckodagen.</small>
+            <label for="lonedatumInput">Ange vilken dag du får lön:</label>
+            <input type="number" class="form-control" id="lonedatumInput" oninput="beraknaBudget()">
+            <small id="veckodagInfo" class="form-text text-muted"></small>
         </div>
         <div id="resultat"></div>
-    </div>
+    </main>
 
     <script>
-        function setDefaultLonedag() {
-            var idag = new Date();
-            var manad = idag.getMonth();
-            var ar = idag.getFullYear();
-
-            if (idag.getDate() >= 25) {
-                manad += 1; // Gå till nästa månad om det är den 25:e eller senare
+        function getAdjustedDate(date, dayOfMonth) {
+            let adjustedDate = new Date(date.getFullYear(), date.getMonth(), dayOfMonth);
+            if (adjustedDate.getDay() === 6) { // Lördag
+                adjustedDate.setDate(dayOfMonth - 1);
+            } else if (adjustedDate.getDay() === 0) { // Söndag
+                adjustedDate.setDate(dayOfMonth + 1);
             }
-
-            var lonedag = new Date(ar, manad, 25); // Kontrollera den 25:e i aktuell eller nästa månad
-
-            switch (lonedag.getDay()) {
-                case 6: // Lördag
-                    lonedag.setDate(24);
-                    break;
-                case 0: // Söndag
-                    lonedag.setDate(26);
-                    break;
-                default:
-                    lonedag.setDate(25);
-            }
-
-            document.getElementById("lonedag").value = lonedag.getDate();
-            document.getElementById("veckodagInfo").textContent = "Standard lönedag är " + lonedag.toLocaleDateString('sv-SE', { weekday: 'long' }) + " den " + lonedag.getDate() + "/" + lonedag.getMonth() + ".";
+            return adjustedDate;
         }
 
-        window.onload = function() {
-            setDefaultLonedag();
-            beraknaBudget(); // Beräkna budget vid sidans laddning
-            document.getElementById("saldo").focus(); // Sätter fokus på saldo-fältet direkt
-        };
+        function setDefaultLonedag() {
+            const idag = new Date();
+            const lonedag = getAdjustedDate(new Date(idag.getFullYear(), idag.getMonth(), 25), 25);
+            document.getElementById("lonedatumInput").value = lonedag.getDate();
+            document.getElementById("veckodagInfo").textContent = "Standard lönedag är " + lonedag.toLocaleDateString('sv-SE', { weekday: 'long' }) + " den " + lonedag.getDate() + "/" + (lonedag.getMonth() + 1) + ".";
+        }
 
         function beraknaBudget() {
-            var saldo = document.getElementById("saldo").value;
-            var lonedag = document.getElementById("lonedag").value || setDefaultLonedag();
-            var idag = new Date();
-            var manad = idag.getMonth();
-            var ar = idag.getFullYear();
-
-            if (idag.getDate() > lonedag) {
-                manad += 1; // Gå till nästa månad om dagens datum är efter lönedagen
-            }
-
-            var nastaLonedag = new Date(ar, manad, lonedag);
+            const saldo = document.getElementById("nuvarandeSaldo").value;
+            const lonedag = document.getElementById("lonedatumInput").value || setDefaultLonedag();
+            const idag = new Date();
+            let nastaLonedag = getAdjustedDate(new Date(idag.getFullYear(), idag.getMonth(), lonedag), lonedag);
 
             if (nastaLonedag < idag) {
-                nastaLonedag.setMonth(nastaLonedag.getMonth() + 1); // Gå till nästa månad om nästa lönedag redan har passerat
+                nastaLonedag = getAdjustedDate(new Date(idag.getFullYear(), idag.getMonth() + 1, lonedag), lonedag);
             }
 
-            var dagarTillLon = Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24)); // Räkna ut antalet dagar till nästa lönedag
+            const dagarTillLon = Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
 
             if (dagarTillLon > 0 && saldo) {
-                var pengarPerDag = (saldo / dagarTillLon).toFixed(2);
+                const pengarPerDag = (saldo / dagarTillLon).toFixed(2);
                 document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera " + pengarPerDag + " kr per dag.";
             } else {
                 document.getElementById("resultat").innerHTML = "Vänligen ange giltiga värden för både saldo och lönedag.";
             }
         }
+
+        window.onload = function() {
+            setDefaultLonedag();
+            beraknaBudget();
+            document.getElementById("nuvarandeSaldo").focus();
+        };
     </script>
 </body>
 </html>
