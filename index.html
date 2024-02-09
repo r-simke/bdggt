@@ -15,17 +15,41 @@
             <input type="number" class="form-control" id="saldo" required>
         </div>
         <div class="form-group">
-            <label for="lonedag">Ange vilken dag du får lön (standard är 25):</label>
-            <input type="number" class="form-control" id="lonedag" value="25">
+            <label for="lonedag">Ange vilken dag du får lön:</label>
+            <input type="number" class="form-control" id="lonedag">
+            <small id="veckodagInfo" class="form-text text-muted">Lönedagen sätts automatiskt beroende på veckodagen.</small>
         </div>
         <button class="btn btn-primary mb-3" onclick="beraknaBudget()">Beräkna</button>
         <div id="resultat"></div>
     </div>
 
     <script>
+        function setDefaultLonedag() {
+            var idag = new Date();
+            var manad = idag.getMonth() + 1;
+            var ar = idag.getFullYear();
+            var lonedag = new Date(ar, manad, 25);
+
+            switch (lonedag.getDay()) {
+                case 6: // Lördag
+                    lonedag.setDate(24);
+                    break;
+                case 0: // Söndag
+                    lonedag.setDate(26);
+                    break;
+                default:
+                    lonedag.setDate(25);
+            }
+
+            document.getElementById("lonedag").value = lonedag.getDate();
+            document.getElementById("veckodagInfo").textContent = "Standard lönedag är " + lonedag.toLocaleDateString('sv-SE', { weekday: 'long' }) + " den " + lonedag.getDate() + ".";
+        }
+
+        window.onload = setDefaultLonedag;
+
         function beraknaBudget() {
             var saldo = document.getElementById("saldo").value;
-            var lonedag = document.getElementById("lonedag").value || 25;
+            var lonedag = document.getElementById("lonedag").value;
             var idag = new Date().getDate();
             var manad = new Date().getMonth() + 1;
             var ar = new Date().getFullYear();
