@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h2>BDGTT:-</h2>
+        <h2>BDGGT:-</h2>
         <div class="form-group">
             <label for="saldo">Ange ditt nuvarande saldo:</label>
             <input type="tel" class="form-control" id="saldo" required oninput="beraknaBudget()">
@@ -52,6 +52,7 @@
         window.onload = function() {
             setDefaultLonedag();
             beraknaBudget(); // Beräkna budget vid sidans laddning
+            document.getElementById("saldo").focus(); // Sätter fokus på saldo-fältet direkt
         };
 
         function beraknaBudget() {
