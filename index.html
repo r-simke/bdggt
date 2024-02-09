@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BDGGT:- Daglig Budget Beräknare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- import motivations from motivationer.js -->
+    <script src="motivationer.js"></script>
+    <script src="lonedagar.js"></script>
     <style>
         .input-group-text {
             border-left: 0;
@@ -55,13 +58,6 @@
     </main>
 
     <script>
-        const lonedagar = [
-            "2024-02-26",
-            "2024-03-25",
-            "2024-04-25",
-            "2024-05-24",
-            "2024-06-25",
-        ];
         let pengarPerDag = 0;
 
         function hittaNastaLonedag() {
@@ -107,22 +103,6 @@
         }
 
         function visaSparMotivation() {
-            const motivationer = [
-                "Tänk dig att varje sparad krona är som en liten superhjälte som kämpar för din ekonomiska frihet!",
-                "Spara som om du planerade den mest episka semesterresan till en plats där pengar inte behövs!",
-                "Varje sparat öre är som en applåd till din framtida jag – Bra jobbat!",
-                "Kom ihåg, den som spar han har... mer att spendera på roliga saker senare!",
-                "Se dina besparingar som en spel-poäng! Högre poäng = fler möjligheter!",
-                "Spara idag, lev som en kung imorgon. Eller åtminstone som en väldigt nöjd hertig!",
-                "Varje sparat öre är en biljett till ditt nästa stora äventyr. Packa dina väskor!",
-                "Spara som om du skulle vinna en stor summa pengar imorgon – du vet aldrig vad som händer!",
-                "Bra jobbat! Du är på god väg att bli en ekonomisk superhjälte!",
-                "Spara som om du skulle ge bort en stor summa pengar imorgon – du vet aldrig vad som händer!",
-                "Varje sparat öre är som en liten kärlekshälsning till din framtida ekonomi!",
-                "Redan nu kan du känna dig som en ekonomisk mästare! Spara på!",
-                "Kom ihåg, den som spar han har... mer att spendera på roliga saker senare!",
-            ];
-
             const slumpIndex = Math.floor(Math.random() * motivationer.length);
             const slumpMotivation = motivationer[slumpIndex];
 
