@@ -8,7 +8,7 @@
 </head>
 <body>
     <main class="container mt-5">
-        <h2>BDGGT:- Daglig Budget Beräknare</h2>
+        <h2>BDGGT:-</h2>
         <div class="form-group">
             <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
             <input type="tel" class="form-control" id="nuvarandeSaldo" required oninput="beraknaBudget()">
@@ -53,7 +53,7 @@
 
             if (dagarTillLon > 0 && saldo) {
                 const pengarPerDag = (saldo / dagarTillLon).toFixed(2);
-                document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera " + pengarPerDag + " kr per dag.";
+                document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera <strong>" + pengarPerDag + " kr</strong> per dag.";
             } else {
                 document.getElementById("resultat").innerHTML = "Vänligen ange giltiga värden för både saldo och lönedag.";
             }
