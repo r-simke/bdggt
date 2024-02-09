@@ -46,7 +46,7 @@
             }
 
             document.getElementById("lonedag").value = lonedag.getDate();
-            document.getElementById("veckodagInfo").textContent = "Standard lönedag är " + lonedag.toLocaleDateString('sv-SE', { weekday: 'long' }) + " den " + lonedag.getDate() + ".";
+            document.getElementById("veckodagInfo").textContent = "Standard lönedag är " + lonedag.toLocaleDateString('sv-SE', { weekday: 'long' }) + " den " + lonedag.getDate() + "/" + lonedag.getMonth() + ".";
         }
 
         window.onload = function() {
