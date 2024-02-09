@@ -87,6 +87,8 @@
 
         function beraknaBudget() {
             const saldo = document.getElementById("nuvarandeSaldo").value;
+            // update local storage
+            localStorage.setItem('senasteSaldo', saldo);
 
             if (saldo) {
                 const dagarTillLon = beraknaDagarTillLon();
