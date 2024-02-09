@@ -5,63 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BDGGT:- Daglig Budget Beräknare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .input-group-text {
+            border-left: 0;
+            background: white;
+        }
+        .form-control {
+            border-right: 0;
+        }
+        .input-group-append {
+            margin-left: -1px;
+        }
+    </style>
 </head>
 <body>
     <main class="container mt-5">
         <h2>BDGGT:-</h2>
         <div class="form-group">
-            <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
-            <input type="tel" class="form-control" id="nuvarandeSaldo" required oninput="beraknaBudget()">
+            <label for="lonedatum">Du får lön <span id="lonedatum" class="form-control-static"></span>.</label>
         </div>
         <div class="form-group">
-            <label for="lonedatumInput">Ange vilken dag du får lön:</label>
-            <input type="number" class="form-control" id="lonedatumInput" oninput="beraknaBudget()">
-            <small id="veckodagInfo" class="form-text text-muted"></small>
+            <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
+            <div class="input-group">
+                <input type="tel" class="form-control" id="nuvarandeSaldo" required oninput="beraknaBudget()">
+                <div class="input-group-append">
+                    <span class="input-group-text">kr</span>
+                </div>
+            </div>
         </div>
+
+        <button id="ingaFlereUtgifter" class="btn btn-info">Inga fler utgifter idag</button>
+
+        
         <div id="resultat"></div>
     </main>
 
-  <script>
-    const lonedagar = ["2024-02-26", "2024-03-25"]; // Lista med lönedagar
+    <script>
+        const lonedagar = ["2024-02-26", "2024-03-25"]; // Lista med lönedagar
 
-    function hittaNastaLonedag() {
-        const idag = new Date();
-        idag.setHours(0, 0, 0, 0); // Nollställer tid till början av dagen för rättvis jämförelse
+        function hittaNastaLonedag() {
+            const idag = new Date();
+            idag.setHours(0, 0, 0, 0); // Nollställer tid till början av dagen för rättvis jämförelse
 
-        for (let datum of lonedagar) {
-            const lonedag = new Date(datum);
-            if (lonedag > idag) {
-                return lonedag;
+            for (let datum of lonedagar) {
+                const lonedag = new Date(datum);
+                if (lonedag > idag) {
+                    return lonedag;
+                }
+            }
+            return null; // Om ingen framtida lönedag finns i listan
+        }
+
+        function beraknaBudget() {
+            const saldo = document.getElementById("nuvarandeSaldo").value;
+            localStorage.setItem('senasteSaldo', saldo); // Spara senaste saldo i localStorage
+
+            const nastaLonedag = hittaNastaLonedag();
+
+            if (nastaLonedag && saldo) {
+                const idag = new Date();
+                const dagarTillLon = Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
+                const pengarPerDag = (saldo / dagarTillLon).toFixed(2);
+                document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera<br /><strong>" + pengarPerDag + " kr</strong><br/> per dag.";
+            } else {
+                document.getElementById("resultat").innerHTML = "Vänligen ange ett giltigt saldo.";
             }
         }
-        return null; // Om ingen framtida lönedag finns i listan
-    }
 
-    function beraknaBudget() {
-        const saldo = document.getElementById("nuvarandeSaldo").value;
-        localStorage.setItem('senasteSaldo', saldo); // Spara senaste saldo i localStorage
-
-        const nastaLonedag = hittaNastaLonedag();
-
-        if (nastaLonedag && saldo) {
-            const idag = new Date();
-            const dagarTillLon = Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
-            const pengarPerDag = (saldo / dagarTillLon).toFixed(2);
-            document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera " + pengarPerDag + " kr per dag.";
-        } else {
-            document.getElementById("resultat").innerHTML = "Vänligen ange ett giltigt saldo.";
-        }
-    }
-
-    window.onload = function() {
-        const sparatSaldo = localStorage.getItem('senasteSaldo'); // Hämta sparad saldo från localStorage
-        if (sparatSaldo) {
-            document.getElementById("nuvarandeSaldo").value = sparatSaldo;
-        }
-        beraknaBudget();
-        document.getElementById("nuvarandeSaldo").focus();
-    };
-</script>
+        window.onload = function() {
+            const sparatSaldo = localStorage.getItem('senasteSaldo'); // Hämta sparad saldo från localStorage
+            if (sparatSaldo) {
+                document.getElementById("nuvarandeSaldo").value = sparatSaldo;
+            }
+            const nastaLonedag = hittaNastaLonedag();
+            if (nastaLonedag) {
+                document.getElementById("lonedatum").innerHTML = nastaLonedag.toLocaleDateString('sv-SE', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                });
+            }
+            beraknaBudget();
+            document.getElementById("nuvarandeSaldo").focus();
+        };
+    </script>
 
 </body>
 </html>
