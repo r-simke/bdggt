@@ -20,13 +20,18 @@
             display: block;
             margin-top: 20px;
         }
+        .tooltip-inner {
+            max-width: 200px;
+            /* Override Bootstrap's default width for tooltips */
+        }
     </style>
 </head>
 <body>
     <main class="container mt-5">
         <h2>BDGGT:-</h2>
+        <p>Beräkna hur mycket du kan spendera dagligen fram till din nästa lön.</p>
         <div class="form-group">
-            <label for="lonedatum">Du får lön <span id="lonedatum" class="form-control-static"></span>.</label>
+            <label for="lonedatum">Nästa lönedatum: <span id="lonedatum" class="form-control-static"></span></label>
         </div>
         <div class="form-group">
             <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
@@ -36,19 +41,27 @@
                     <span class="input-group-text">kr</span>
                 </div>
             </div>
+            <small id="saldoHelp" class="form-text text-muted">Ditt tillgängliga saldo just nu.</small>
         </div>
         <div class="form-group form-check">
             <input type="checkbox" class="form-check-input" id="ingaFlereUtgifter">
             <label class="form-check-label" for="ingaFlereUtgifter">Inga fler utgifter idag</label>
+            <small id="utgifterHelp" class="form-text text-muted">Markera om du inte planerar några fler utgifter idag.</small>
         </div>
         <div id="resultat" class="mt-3"></div>
-        <label for="dagligBudgetSlider" class="slider-label">Jag klarar mig med <span id="valdDagligBudget"></span> kr per dag:</label>
+        <label for="dagligBudgetSlider" class="slider-label">Anpassa daglig budget: <span id="valdDagligBudget"></span> kr</label>
         <input type="range" class="custom-range" id="dagligBudgetSlider" min="0" value="0" oninput="visaAnpassadBudget()">
         <div id="sparadBudgetResultat" class="mt-3"></div>
     </main>
 
     <script>
-        const lonedagar = ["2024-02-26", "2024-03-25"];
+        const lonedagar = [
+            "2024-02-26",
+            "2024-03-25",
+            "2024-04-25",
+            "2024-05-24",
+            "2024-06-25",
+        ];
         let pengarPerDag = 0;
 
         function hittaNastaLonedag() {
@@ -74,7 +87,6 @@
             } else {
                 return 1 + Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
             }
-
         }
 
         function beraknaBudget() {
@@ -94,14 +106,38 @@
             }
         }
 
+        function visaSparMotivation() {
+            const motivationer = [
+                "Tänk dig att varje sparad krona är som en liten superhjälte som kämpar för din ekonomiska frihet!",
+                "Spara som om du planerade den mest episka semesterresan till en plats där pengar inte behövs!",
+                "Varje sparat öre är som en applåd till din framtida jag – Bra jobbat!",
+                "Kom ihåg, den som spar han har... mer att spendera på roliga saker senare!",
+                "Se dina besparingar som en spel-poäng! Högre poäng = fler möjligheter!",
+                "Spara idag, lev som en kung imorgon. Eller åtminstone som en väldigt nöjd hertig!",
+                "Varje sparat öre är en biljett till ditt nästa stora äventyr. Packa dina väskor!",
+                "Spara som om du skulle vinna en stor summa pengar imorgon – du vet aldrig vad som händer!",
+                "Bra jobbat! Du är på god väg att bli en ekonomisk superhjälte!",
+                "Spara som om du skulle ge bort en stor summa pengar imorgon – du vet aldrig vad som händer!",
+                "Varje sparat öre är som en liten kärlekshälsning till din framtida ekonomi!",
+                "Redan nu kan du känna dig som en ekonomisk mästare! Spara på!",
+                "Kom ihåg, den som spar han har... mer att spendera på roliga saker senare!",
+            ];
+
+            const slumpIndex = Math.floor(Math.random() * motivationer.length);
+            const slumpMotivation = motivationer[slumpIndex];
+
+            document.getElementById("sparadBudgetResultat").innerHTML += "<p><em>" + slumpMotivation + "</em></p>";
+        }
+
         function visaAnpassadBudget() {
             const saldo = document.getElementById("nuvarandeSaldo").value;
             const anpassadBudget = document.getElementById("dagligBudgetSlider").value;
             const dagarTillLon = beraknaDagarTillLon();
             document.getElementById("valdDagligBudget").textContent = anpassadBudget;
 
-            const sparadePengar = (saldo - (anpassadBudget * dagarTillLon).toFixed(2));
+            const sparadePengar = (saldo - (anpassadBudget * dagarTillLon)).toFixed(2);
             document.getElementById("sparadBudgetResultat").innerHTML = "Om du klarar dig med " + anpassadBudget + " kr per dag, kommer du ha <strong>" + sparadePengar + " kr</strong> kvar på lönedagen.";
+            visaSparMotivation(); // Lägg till motiverande meddelande
         }
 
         window.onload = function() {
@@ -116,6 +152,10 @@
                     day: 'numeric',
                     month: 'long',
                 });
+            } else {
+                document.getElementById("lonedatum").innerHTML = "Okänt datum. Lägg till fler lönedagar i JavaScript-koden!";
+                // gör texten mörkröd
+                document.getElementById("lonedatum").style.color = "darkred";
             }
             beraknaBudget();
             document.getElementById("nuvarandeSaldo").focus();
