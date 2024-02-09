@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BDGGT:-</title>
+    <title>Daglig Budget Beräknare</title>
     <!-- Inkludera Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
@@ -12,14 +12,13 @@
         <h2>Daglig Budget Beräknare</h2>
         <div class="form-group">
             <label for="saldo">Ange ditt nuvarande saldo:</label>
-            <input type="number" class="form-control" id="saldo" required>
+            <input type="number" class="form-control" id="saldo" required oninput="beraknaBudget()">
         </div>
         <div class="form-group">
             <label for="lonedag">Ange vilken dag du får lön:</label>
-            <input type="number" class="form-control" id="lonedag">
+            <input type="number" class="form-control" id="lonedag" oninput="beraknaBudget()">
             <small id="veckodagInfo" class="form-text text-muted">Lönedagen sätts automatiskt beroende på veckodagen.</small>
         </div>
-        <button class="btn btn-primary mb-3" onclick="beraknaBudget()">Beräkna</button>
         <div id="resultat"></div>
     </div>
 
@@ -28,10 +27,12 @@
             var idag = new Date();
             var manad = idag.getMonth();
             var ar = idag.getFullYear();
-            if (idag.getDay() >= 25) {
+
+            if (idag.getDate() >= 25) {
                 manad += 1; // Gå till nästa månad om det är den 25:e eller senare
             }
-            var lonedag = new Date(ar, manad, 25);
+
+            var lonedag = new Date(ar, manad, 25); // Kontrollera den 25:e i aktuell eller nästa månad
 
             switch (lonedag.getDay()) {
                 case 6: // Lördag
@@ -48,28 +49,35 @@
             document.getElementById("veckodagInfo").textContent = "Standard lönedag är " + lonedag.toLocaleDateString('sv-SE', { weekday: 'long' }) + " den " + lonedag.getDate() + ".";
         }
 
-        window.onload = setDefaultLonedag;
+        window.onload = function() {
+            setDefaultLonedag();
+            beraknaBudget(); // Beräkna budget vid sidans laddning
+        };
 
         function beraknaBudget() {
             var saldo = document.getElementById("saldo").value;
-            var lonedag = document.getElementById("lonedag").value;
-            var idag = new Date().getDate();
-            var manad = new Date().getMonth() + 1;
-            var ar = new Date().getFullYear();
-            var dagarTillLon = 0;
+            var lonedag = document.getElementById("lonedag").value || setDefaultLonedag();
+            var idag = new Date();
+            var manad = idag.getMonth();
+            var ar = idag.getFullYear();
 
-            if (idag <= lonedag) {
-                dagarTillLon = lonedag - idag;
-            } else {
-                var dagarIManaden = new Date(ar, manad, 0).getDate();
-                dagarTillLon = dagarIManaden - idag + parseInt(lonedag);
+            if (idag.getDate() > lonedag) {
+                manad += 1; // Gå till nästa månad om dagens datum är efter lönedagen
             }
 
-            if (dagarTillLon > 0) {
+            var nastaLonedag = new Date(ar, manad, lonedag);
+
+            if (nastaLonedag < idag) {
+                nastaLonedag.setMonth(nastaLonedag.getMonth() + 1); // Gå till nästa månad om nästa lönedag redan har passerat
+            }
+
+            var dagarTillLon = Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24)); // Räkna ut antalet dagar till nästa lönedag
+
+            if (dagarTillLon > 0 && saldo) {
                 var pengarPerDag = (saldo / dagarTillLon).toFixed(2);
                 document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera " + pengarPerDag + " kr per dag.";
             } else {
-                document.getElementById("resultat").innerHTML = "Något gick fel. Kontrollera att du har angett korrekt information.";
+                document.getElementById("resultat").innerHTML = "Vänligen ange giltiga värden för både saldo och lönedag.";
             }
         }
     </script>
