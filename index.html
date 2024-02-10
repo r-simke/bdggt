@@ -34,11 +34,19 @@
                 /* Override Bootstrap's default width for tooltips */
             }
 
-            .logo {
-                height: auto;
-                margin: 0 auto;
-                width: 150px;
-            }
+            .logo-container {
+    position: relative;
+    width: 150px; /* eller den bredd du föredrar */
+    /* height: 200px; eller den höjd du föredrar */
+    height: 60px;
+    /* margin: 0 auto */
+}
+
+.logo {
+        height: 60px;
+    position: absolute;
+    cursor: grab; /* Ändrar muspekaren för att indikera att objektet kan dras */
+}
 
             html {
                 background: linear-gradient(135deg, rgba(231, 241, 247, 1) 0%, rgba(179, 158, 219, 1) 100%);
@@ -65,7 +73,9 @@
                 </div>
             </div>
 
-            <p><img src="logo.webp" alt="BDGGT:- Logga" class="logo"></p>
+            <p class="logo-container">
+                <img src="logo.webp" alt="BDGGT:- Logga" class="logo">
+            </p>
             <p>Beräkna hur mycket du kan spendera dagligen fram till din nästa lön.</p>
             <div class="form-group">
                 <label for="lonedatum">Nästa lönedatum: <span id="lonedatum">{{ humanReadableDate(nastaLonedag) }}</span></label>
