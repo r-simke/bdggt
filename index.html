@@ -125,6 +125,7 @@
             const saldo = document.getElementById("nuvarandeSaldo").value;
             // update local storage
             localStorage.setItem('senasteSaldo', saldo);
+            // input field shows value in local format
 
             if (saldo) {
                 // remove d-none class
@@ -132,12 +133,12 @@
                 document.querySelector(".slider-label").classList.remove("d-none");
                 const dagarTillLon = beraknaDagarTillLon();
 
-                pengarPerDag = (saldo / Math.max(dagarTillLon, 1)).toFixed(2);
+                pengarPerDag = Math.round(saldo / Math.max(dagarTillLon, 1));
                 document.getElementById("dagligBudgetSlider").max = pengarPerDag;
                 document.getElementById("dagligBudgetSlider").value = pengarPerDag;
-                document.getElementById("valdDagligBudget").textContent = pengarPerDag;
+                document.getElementById("valdDagligBudget").textContent = pengarPerDag.toLocaleString('sv-SE');
 
-                document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera<br /><strong>" + pengarPerDag + " kr</strong> per dag.";
+                document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera<br /><strong>" + pengarPerDag.toLocaleString('sv-SE') + " kr</strong> per dag.";
             } else {
                 // add d-none class
                 document.getElementById("dagligBudgetSlider").classList.add("d-none");
@@ -155,13 +156,13 @@
 
         function visaAnpassadBudget() {
             const saldo = document.getElementById("nuvarandeSaldo").value;
-            const anpassadBudget = document.getElementById("dagligBudgetSlider").value;
+            const anpassadBudget = parseInt(document.getElementById("dagligBudgetSlider").value, 10);
             const dagarTillLon = beraknaDagarTillLon();
-            document.getElementById("valdDagligBudget").textContent = anpassadBudget;
+            document.getElementById("valdDagligBudget").textContent = anpassadBudget.toLocaleString('sv-SE');
 
-            const sparadePengar = (saldo - (anpassadBudget * dagarTillLon)).toFixed(2);
-            document.getElementById("sparadBudgetResultat").innerHTML = "Om du klarar dig med " + anpassadBudget + " kr per dag, kommer du ha <br/><strong>" + sparadePengar + " kr</strong> kvar på lönedagen.";
-            visaSparMotivation(); // Lägg till motiverande meddelande
+            const sparadePengar = Math.round(saldo - (anpassadBudget * dagarTillLon));
+            document.getElementById("sparadBudgetResultat").innerHTML = "Om du klarar dig med " + anpassadBudget.toLocaleString('sv-SE') + " kr per dag, kommer du ha <br/><strong>" + sparadePengar.toLocaleString('sv-SE') + " kr</strong> kvar på lönedagen.";
+            visaSparMotivation();
         }
 
         window.onload = function () {
