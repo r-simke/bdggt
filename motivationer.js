@@ -1,4 +1,4 @@
-const motivationer = [
+export const motivationer = [
     "Tänk dig att varje sparad krona är som en liten superhjälte som kämpar för din ekonomiska frihet!",
     "Spara som om du planerade den mest episka semesterresan till en plats där pengar inte behövs!",
     "Varje sparat öre är som en applåd till din framtida jag – Bra jobbat!",
