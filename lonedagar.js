@@ -1,4 +1,4 @@
-const lonedagar = [
+export const lonedagar = [
     "2024-02-26",
     "2024-03-25",
     "2024-04-25",

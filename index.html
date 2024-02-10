@@ -92,102 +92,84 @@
         <p class="text-center">Skapad av <a href="https://github.com/r-simke" target="_blank">r-simke</a></p>
     </footer>
 
-    <script>
-        let pengarPerDag = 0;
+    <style type="text/css">
 
-        function hittaNastaLonedag() {
-            const idag = new Date();
-            idag.setHours(0, 0, 0, 0);
-
-            for (let datum of lonedagar) {
-                const lonedag = new Date(datum);
-                if (lonedag > idag) {
-                    return lonedag;
-                }
+            .form-control {
+                border-right: 0;
             }
-            return null;
-        }
 
-        function beraknaDagarTillLon() {
-            const idag = new Date();
-            idag.setHours(0, 0, 0, 0);
-            const nastaLonedag = hittaNastaLonedag();
-
-            const ingaFlereUtgifter = document.getElementById("ingaFlereUtgifter").checked;
-            if (ingaFlereUtgifter && nastaLonedag) {
-                return -1 + Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
-            } else {
-                return Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
+            .input-group-append {
+                margin-left: -1px;
             }
-        }
 
-        function beraknaBudget() {
-            const saldo = document.getElementById("nuvarandeSaldo").value;
-            // update local storage
-            localStorage.setItem('senasteSaldo', saldo);
-            // input field shows value in local format
-
-            if (saldo) {
-                // remove d-none class
-                document.getElementById("dagligBudgetSlider").classList.remove("d-none");
-                document.querySelector(".slider-label").classList.remove("d-none");
-                const dagarTillLon = beraknaDagarTillLon();
-
-                pengarPerDag = Math.round(saldo / Math.max(dagarTillLon, 1));
-                document.getElementById("dagligBudgetSlider").max = pengarPerDag;
-                document.getElementById("dagligBudgetSlider").value = pengarPerDag;
-                document.getElementById("valdDagligBudget").textContent = pengarPerDag.toLocaleString('sv-SE');
-
-                document.getElementById("resultat").innerHTML = "Du har " + dagarTillLon + " dag(ar) kvar till lön och kan spendera<br /><strong>" + pengarPerDag.toLocaleString('sv-SE') + " kr</strong> per dag.";
-            } else {
-                // add d-none class
-                document.getElementById("dagligBudgetSlider").classList.add("d-none");
-                document.querySelector(".slider-label").classList.add("d-none");
-                document.getElementById("resultat").innerHTML = "Vänligen ange ett giltigt saldo.";
+            .slider-label {
+                display: block;
+                margin-top: 20px;
             }
-        }
 
-        function visaSparMotivation() {
-            const slumpIndex = Math.floor(Math.random() * motivationer.length);
-            const slumpMotivation = motivationer[slumpIndex];
-
-            document.getElementById("sparadBudgetResultat").innerHTML += "<p><em>" + slumpMotivation + "</em></p>";
-        }
-
-        function visaAnpassadBudget() {
-            const saldo = document.getElementById("nuvarandeSaldo").value;
-            const anpassadBudget = parseInt(document.getElementById("dagligBudgetSlider").value, 10);
-            const dagarTillLon = beraknaDagarTillLon();
-            document.getElementById("valdDagligBudget").textContent = anpassadBudget.toLocaleString('sv-SE');
-
-            const sparadePengar = Math.round(saldo - (anpassadBudget * dagarTillLon));
-            document.getElementById("sparadBudgetResultat").innerHTML = "Om du klarar dig med " + anpassadBudget.toLocaleString('sv-SE') + " kr per dag, kommer du ha <br/><strong>" + sparadePengar.toLocaleString('sv-SE') + " kr</strong> kvar på lönedagen.";
-            visaSparMotivation();
-        }
-
-        window.onload = function () {
-            const sparatSaldo = localStorage.getItem('senasteSaldo');
-            if (sparatSaldo) {
-                document.getElementById("nuvarandeSaldo").value = sparatSaldo;
+            .tooltip-inner {
+                max-width: 200px;
+                /* Override Bootstrap's default width for tooltips */
             }
-            const nastaLonedag = hittaNastaLonedag();
-            if (nastaLonedag) {
-                document.getElementById("lonedatum").innerHTML = nastaLonedag.toLocaleDateString('sv-SE', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                });
-            } else {
-                document.getElementById("lonedatum").innerHTML = "Okänt datum. Lägg till fler lönedagar i JavaScript-koden!";
-                // gör texten mörkröd
-                document.getElementById("lonedatum").style.color = "darkred";
-            }
-            beraknaBudget();
-            document.getElementById("nuvarandeSaldo").focus();
 
-            document.getElementById("ingaFlereUtgifter").addEventListener("change", beraknaBudget);
-        };
-    </script>
+            .logo {
+                height: auto;
+                margin: 0 auto;
+                width: 150px;
+            }
+
+            html {
+                background: linear-gradient(135deg, rgba(231, 241, 247, 1) 0%, rgba(179, 158, 219, 1) 100%);
+                height: 100%;
+                background-attachment: fixed;
+            }
+
+            body {
+                /* durchsichtiger hintergrund */
+                background: rgba(255, 255, 255, 0);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app" class="container mt-5">
+            <p><img src="logo.webp" alt="BDGGT:- Logga" class="logo"></p>
+            <p>Beräkna hur mycket du kan spendera dagligen fram till din nästa lön.</p>
+            <div class="form-group">
+                <label for="lonedatum">Nästa lönedatum: <span id="lonedatum">{{ humanReadableDate(nastaLonedag) }}</span></label>
+            </div>
+            <div class="form-group">
+                <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
+                <div class="input-group">
+                    <input type="tel" class="form-control" id="nuvarandeSaldo" v-model="nuvarandeSaldo" required
+                        @input="beraknaBudget">
+                    <div class="input-group-append">
+                        <span class="input-group-text">kr</span>
+                    </div>
+                </div>
+                <small id="saldoHelp" class="form-text text-muted">Ditt tillgängliga saldo just nu.
+                    <a href="https://apps.apple.com/se/app/l%C3%A4nsf%C3%B6rs%C3%A4kringar/id426706646">Öppna
+                        Länsförsäkringar</a></small>
+
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="ingaFlereUtgifter" v-model="ingaFlereUtgifter"
+                    @change="beraknaBudget">
+                <label class="form-check-label" for="ingaFlereUtgifter">Inga fler utgifter idag</label>
+                <small id="utgifterHelp" class="form-text text-muted">Markera om du inte planerar några fler utgifter
+                    idag.</small>
+            </div>
+            <div id="resultat" class="mt-3" v-html="resultat"></div>
+            <label for="dagligBudgetSlider" class="slider-label" v-if="visaSlider">Anpassa daglig budget: <span
+                    id="valdDagligBudget">{{ humanReadable(valdDagligBudget) }}</span> kr</label>
+            <input type="range" class="custom-range" id="dagligBudgetSlider" v-if="visaSlider" min="0" :max="pengarPerDag"
+                v-model="valdDagligBudget" @input="visaAnpassadBudget">
+            <div id="sparadBudgetResultat" class="mt-3" v-html="sparadBudgetResultat"></div>
+        </div>
+
+        <footer class="container mt-5">
+            <p class="text-center">Skapad av <a href="https://github.com/r-simke" target="_blank">r-simke</a></p>
+        </footer>
 
 
     <script src="motivationer.js"></script>
