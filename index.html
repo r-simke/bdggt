@@ -12,6 +12,7 @@
     <title>BDGGT:- Daglig Budget Beräknare</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
 
     <style>
 
@@ -54,6 +55,16 @@
 
     <body>
         <div id="app" class="container mt-5" style="margin-top: 1.5rem !important;">
+            <div class="settings-icon" style="position: absolute; top: 10px; right: 40px; cursor: pointer;" @click="toggleThemeSelector">
+                <i class="fas fa-cog"></i>
+            </div>
+            
+            <div class="theme-selector" v-if="showThemeSelector" style="position: absolute; top: 40px; right: 10px; display: flex;">
+                <div v-for="(gradient, name) in themes" :key="name" @click="changeTheme(name)"
+                    :style="{ background: gradient, width: '30px', height: '30px', cursor: 'pointer', marginRight: '5px' }">
+                </div>
+            </div>
+
             <p><img src="logo.webp" alt="BDGGT:- Logga" class="logo"></p>
             <p>Beräkna hur mycket du kan spendera dagligen fram till din nästa lön.</p>
             <div class="form-group">
