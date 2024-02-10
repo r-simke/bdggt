@@ -116,10 +116,11 @@
 
         function beraknaDagarTillLon() {
             const idag = new Date();
+            idag.setHours(0, 0, 0, 0);
             const nastaLonedag = hittaNastaLonedag();
-            const saldo = document.getElementById("nuvarandeSaldo").value;
+            
             const ingaFlereUtgifter = document.getElementById("ingaFlereUtgifter").checked;
-            if (ingaFlereUtgifter && nastaLonedag && saldo) {
+            if (ingaFlereUtgifter && nastaLonedag) {
                 return Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
             } else {
                 return 1 + Math.round((nastaLonedag - idag) / (1000 * 60 * 60 * 24));
