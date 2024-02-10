@@ -5,11 +5,18 @@
     "display": "standalone",
     "orientation": "portrait",
     "icons": [
-      {
-        "src": "icon.webp",
+    {
+        "src": "icon.png",
         "sizes": "93x93",
         "type": "image/png"
-      }
+    },
+    {
+        "src": "icon-ios.png",
+        "sizes": "180x180",
+        "type": "image/png",
+        "platform": "ios"
+    }
+      
     ],
     "background_color": "#b39edb",
     "theme_color": "#b39edb"
