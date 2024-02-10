@@ -35,18 +35,18 @@
             }
 
             .logo-container {
-    position: relative;
-    width: 150px; /* eller den bredd du föredrar */
-    /* height: 200px; eller den höjd du föredrar */
-    height: 60px;
-    /* margin: 0 auto */
-}
+                position: relative;
+                width: 150px; /* eller den bredd du föredrar */
+                /* height: 200px; eller den höjd du föredrar */
+                height: 60px;
+                /* margin: 0 auto */
+            }
 
-.logo {
-        height: 60px;
-    position: absolute;
-    cursor: grab; /* Ändrar muspekaren för att indikera att objektet kan dras */
-}
+            .logo {
+                    height: 60px;
+                position: absolute;
+                cursor: grab; /* Ändrar muspekaren för att indikera att objektet kan dras */
+            }
 
             html {
                 background: linear-gradient(135deg, rgba(231, 241, 247, 1) 0%, rgba(179, 158, 219, 1) 100%);
@@ -57,6 +57,9 @@
             body {
                 /* durchsichtiger hintergrund */
                 background: rgba(255, 255, 255, 0);
+            }
+            body, html {
+                overscroll-behavior-y: none;
             }
         </style>
     </head>
