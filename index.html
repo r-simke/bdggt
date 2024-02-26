@@ -1,89 +1,95 @@
 <!DOCTYPE html>
 <html lang="sv">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="BDGGT:-">
-        <link rel="apple-touch-icon" href="icon.png">
-        <link rel="icon" type="image/png" href="icon.png">
-        <title>BDGGT:- Daglig Budget Beräknare</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    
-    <body>
-        <div id="app" class="container mt-5">
-            <div class="settings-icon" @click="toggleThemeSelector">
-                <i class="fas fa-cog"></i>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BDGGT:-">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <title>BDGGT:- Daglig Budget Beräknare</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app" class="container mt-5">
+        <div class="settings-icon" @click="toggleThemeSelector">
+            <i class="fas fa-cog"></i>
+        </div>
+
+        <div class="theme-selector" v-if="showThemeSelector">
+            <div v-for="(gradient, name) in themes" :key="name" @click="changeTheme(name)"
+                :style="{ background: gradient, width: '30px', height: '30px', cursor: 'pointer', marginRight: '5px' }">
             </div>
-            
-            <div class="theme-selector" v-if="showThemeSelector">
-                <div v-for="(gradient, name) in themes" :key="name" @click="changeTheme(name)"
-                    :style="{ background: gradient, width: '30px', height: '30px', cursor: 'pointer', marginRight: '5px' }">
+        </div>
+
+        <p class="logo-container">
+            <img src="logo.webp" alt="BDGGT:- Logga" class="logo">
+        </p>
+        <p>Beräkna hur mycket du kan spendera dagligen fram till din nästa lön.</p>
+        <div class="form-group">
+            <label for="lonedatum">Nästa lönedatum: <span id="lonedatum">{{ humanReadableDate(nastaLonedag)
+                    }}</span></label>
+        </div>
+        <div class="form-group">
+            <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
+            <div class="input-group">
+                <input type="tel" class="form-control" id="nuvarandeSaldo" v-model="nuvarandeSaldo" required
+                    @input="beraknaBudget">
+                <div class="input-group-append">
+                    <span class="input-group-text">kr</span>
                 </div>
             </div>
-            
-            <p class="logo-container">
-                <img src="logo.webp" alt="BDGGT:- Logga" class="logo">
-            </p>
-            <p>Beräkna hur mycket du kan spendera dagligen fram till din nästa lön.</p>
-            <div class="form-group">
-                <label for="lonedatum">Nästa lönedatum: <span id="lonedatum">{{ humanReadableDate(nastaLonedag) }}</span></label>
-            </div>
-            <div class="form-group">
-                <label for="nuvarandeSaldo">Ange ditt nuvarande saldo:</label>
-                <div class="input-group">
-                    <input type="tel" class="form-control" id="nuvarandeSaldo" v-model="nuvarandeSaldo" required
-                        @input="beraknaBudget">
-                    <div class="input-group-append">
-                        <span class="input-group-text">kr</span>
-                    </div>
-                </div>
-                <small id="saldoHelp" class="form-text text-muted">Ditt tillgängliga saldo just nu.
-                    <a href="https://apps.apple.com/se/app/l%C3%A4nsf%C3%B6rs%C3%A4kringar/id426706646">
-                        Öppna Länsförsäkringar
-                    </a>
-                    &nbsp;
-                    <!-- <div class="input-group mb-3">
+            <small id="saldoHelp" class="form-text text-muted">Ditt tillgängliga saldo just nu.
+                <a href="https://apps.apple.com/se/app/l%C3%A4nsf%C3%B6rs%C3%A4kringar/id426706646">
+                    Öppna Länsförsäkringar
+                </a>
+                &nbsp;
+                <!-- <div class="input-group mb-3">
                         <div class="input-group-prepend"> -->
-                            <button class="btn btn-outline-primary btn-sm btn-light" type="button" @click="appendToInput('+')">+</button>
-                            <button class="btn btn-outline-primary btn-sm btn-light" type="button" @click="appendToInput('-')">-</button>
-                            <button class="btn btn-outline-primary btn-sm btn-light" type="button" @click="appendToInput('*')">*</button>
-                            <button class="btn btn-outline-primary btn-sm btn-light" type="button" @click="appendToInput('/')">/</button>
-                            <!-- </div>
+                <button class="btn btn-outline-primary btn-sm btn-light" type="button"
+                    @click="appendToInput('+')">+</button>
+                <button class="btn btn-outline-primary btn-sm btn-light" type="button"
+                    @click="appendToInput('-')">-</button>
+                <button class="btn btn-outline-primary btn-sm btn-light" type="button"
+                    @click="appendToInput('*')">*</button>
+                <button class="btn btn-outline-primary btn-sm btn-light" type="button"
+                    @click="appendToInput('/')">/</button>
+                <!-- </div>
                             </div> -->
-                        </small>
-                        
-                    </div>
-                    <div class="form-group form-check">
-                        <input type="checkbox" class="form-check-input" id="ingaFlereUtgifter" v-model="ingaFlereUtgifter"
-                        @change="beraknaBudget">
-                        <label class="form-check-label" for="ingaFlereUtgifter">Inga fler utgifter idag</label>
-                        <small id="utgifterHelp" class="form-text text-muted">Markera om du inte planerar några fler utgifter
-                            idag.</small>
-                        </div>
-                        <div id="resultat" class="mt-3" v-html="resultat"></div>
-                        <label for="dagligBudgetSlider" class="slider-label" v-if="visaSlider">Anpassa daglig budget: <span
-                            id="valdDagligBudget">{{ humanReadable(valdDagligBudget) }}</span> kr</label>
-                            <input type="range" class="custom-range" id="dagligBudgetSlider" v-if="visaSlider" min="0" :max="pengarPerDag"
-                            v-model="valdDagligBudget" @input="visaAnpassadBudget">
-                            <div id="sparadBudgetResultat" class="mt-3" v-html="sparadBudgetResultat"></div>
-                        </div>
+            </small>
 
-                        <footer class="container mt-5">
-                            <p class="text-center">Skapad av <a href="https://github.com/r-simke" target="_blank">r-simke</a></p>
-                        </footer>
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="ingaFlereUtgifter" v-model="ingaFlereUtgifter"
+                @change="beraknaBudget">
+            <label class="form-check-label" for="ingaFlereUtgifter">Inga fler utgifter idag</label>
+            <small id="utgifterHelp" class="form-text text-muted">Markera om du inte planerar några fler utgifter
+                idag.</small>
+        </div>
+        <div id="resultat" class="mt-3" v-html="resultat"></div>
+        <label for="dagligBudgetSlider" class="slider-label" v-if="visaSlider">Anpassa daglig budget: <span
+                id="valdDagligBudget">{{ humanReadable(valdDagligBudget) }}</span> kr</label>
+        <input type="range" class="custom-range" id="dagligBudgetSlider" v-if="visaSlider" min="0" :max="pengarPerDag"
+            v-model="valdDagligBudget" @input="visaAnpassadBudget">
+        <div id="sparadBudgetResultat" class="mt-3" v-html="sparadBudgetResultat"></div>
+    </div>
 
-                        
-                        
-                        
-                        <script src="motivationer.js"></script>
-                        <script src="lonedagar.js"></script>
-        <script src="app.js"></script>
-    </body>
+    <footer class="container mt-5">
+        <p class="text-center">Skapad av <a href="https://github.com/r-simke" target="_blank">r-simke</a></p>
+    </footer>
+
+
+
+
+    <script src="motivationer.js"></script>
+    <script src="lonedagar.js"></script>
+    <script src="app.js"></script>
+</body>
+
 </html>
