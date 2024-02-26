@@ -29,6 +29,17 @@ new Vue({
         }
 
     },
+    computed: {
+        evaluatedNuvarandeSaldo: function () {
+            try {
+                // Evaluera det användaren har skrivit in i nuvarandeSaldo-fältet
+                return eval(this.nuvarandeSaldo);
+            } catch (error) {
+                // Om uttrycket inte kan utvärderas, returnera noll
+                return 0;
+            }
+        }
+    },
     methods: {
         toggleThemeSelector: function () {
             this.showThemeSelector = !this.showThemeSelector; // Visa/dölj temaväljaren
@@ -75,24 +86,22 @@ new Vue({
             }
         },
         beraknaBudget: function () {
-            if (this.nuvarandeSaldo === '' || !isNaN(this.nuvarandeSaldo)) {
-                localStorage.setItem('nuvarandeSaldo', this.nuvarandeSaldo);
-            } else {
+            // Use the evaluatedNuvarandeSaldo computed property instead of nuvarandeSaldo directly
+            if (this.evaluatedNuvarandeSaldo === 0 || isNaN(this.evaluatedNuvarandeSaldo)) {
                 localStorage.removeItem('nuvarandeSaldo');
-            }
-            if (this.nuvarandeSaldo && !isNaN(this.nuvarandeSaldo) && this.nuvarandeSaldo > 0) {
-                this.visaSlider = true;
-                this.dagarTillLon = this.beraknaDagarTillLon();
-
-                this.pengarPerDag = Math.round(this.nuvarandeSaldo / Math.max(this.dagarTillLon, 1));
-                this.valdDagligBudget = this.pengarPerDag;
-
-                this.sparadBudgetResultat = '';
-
-                this.resultat = "Du har " + this.dagarTillLon + " dag(ar) kvar till lön och kan spendera<br /><strong>" + this.pengarPerDag.toLocaleString('sv-SE') + " kr</strong> per dag.";
-            } else {
                 this.visaSlider = false;
                 this.resultat = "Vänligen ange ett giltigt saldo.";
+            } else {
+                localStorage.setItem('nuvarandeSaldo', this.nuvarandeSaldo);
+                this.visaSlider = true;
+                this.dagarTillLon = this.beraknaDagarTillLon();
+    
+                this.pengarPerDag = Math.round(this.evaluatedNuvarandeSaldo / Math.max(this.dagarTillLon, 1));
+                this.valdDagligBudget = this.pengarPerDag;
+    
+                this.sparadBudgetResultat = '';
+    
+                this.resultat = "Du har " + this.dagarTillLon + " dag(ar) kvar till lön och kan spendera<br /><strong>" + this.pengarPerDag.toLocaleString('sv-SE') + " kr</strong> per dag.";
             }
         },
         visaSparMotivation: function () {
