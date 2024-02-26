@@ -57,9 +57,9 @@ new Vue({
         hittaNastaLonedag: function () {
 
             for (let datum of lonedagar) {
-                const lonedag = new Date(datum);
+                const lonedag = new Date(datum).setHours(0, 0, 0, 0);
                 if (lonedag > this.idag) {
-                    this.nastaLonedag = lonedag;
+                    this.nastaLonedag = new Date(datum);
                     return;
                 }
             }
