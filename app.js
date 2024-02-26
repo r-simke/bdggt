@@ -41,6 +41,9 @@ new Vue({
         }
     },
     methods: {
+        appendToInput: function (operator) {
+            this.nuvarandeSaldo += operator;
+        },
         toggleThemeSelector: function () {
             this.showThemeSelector = !this.showThemeSelector; // Visa/dölj temaväljaren
         },
